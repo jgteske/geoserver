@@ -74,5 +74,28 @@ public class DescribeLayerTest extends WMSTestSupport {
         Element e = (Element) dom.getElementsByTagName("LayerDescription").item(0);
         String attribute = e.getAttribute("owsURL");
         assertTrue(attribute.contains("sf/wfs"));
+
+        e = (Element) dom.getElementsByTagName("Query").item(0);
+        String typeName = e.getAttribute("typeName");
+        assertEquals("unexpected fully qualified typename", "sf:PrimitiveGeoFeature", typeName);
+    }
+
+    @Test
+    public void testWorkspaceNonQualified() throws Exception {
+        Document dom =
+                getAsDOM(
+                        "wms?service=wms&version=1.1.1&request=DescribeLayer"
+                                + "&layers=PrimitiveGeoFeature",
+                        true);
+        // print(dom);
+        assertEquals("WMS_DescribeLayerResponse", dom.getDocumentElement().getNodeName());
+
+        Element e = (Element) dom.getElementsByTagName("LayerDescription").item(0);
+        String attribute = e.getAttribute("owsURL");
+        assertTrue(attribute.contains("wfs"));
+
+        e = (Element) dom.getElementsByTagName("Query").item(0);
+        String typeName = e.getAttribute("typeName");
+        assertEquals("unexpected fully qualified typename", "sf:PrimitiveGeoFeature", typeName);
     }
 }
